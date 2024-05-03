@@ -1,0 +1,46 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import fetch_openml
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import f1_score
+
+# Step 1: Download MNIST dataset and visualize the data classes
+mnist = fetch_openml('mnist_784')
+X, y = mnist['data'], mnist['target']
+
+# Visualize some random samples from the dataset
+fig, axes = plt.subplots(2, 5, figsize=(10, 4))
+for i, ax in enumerate(axes.flat):
+    ax.imshow(X[i].reshape(28, 28), cmap='binary')
+    ax.set_title(f'Label: {y[i]}')
+    ax.axis('off')
+plt.show()
+
+# Step 2: Split the MNIST dataset into 90% training and 10% testing for SVM
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
+
+# Train SVM classifier
+svm_classifier = SVC()
+svm_classifier.fit(X_train, y_train)
+
+# Predictions using SVM
+svm_predictions = svm_classifier.predict(X_test)
+
+# Step 3: Split the dataset and use Logistic Regression for classification
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
+
+# Train Logistic Regression classifier
+lr_classifier = LogisticRegression(max_iter=1000)
+lr_classifier.fit(X_train, y_train)
+
+# Predictions using Logistic Regression
+lr_predictions = lr_classifier.predict(X_test)
+
+# Step 4: Use F1 score as the evaluation metric
+svm_f1_score = f1_score(y_test, svm_predictions, average='weighted')
+lr_f1_score = f1_score(y_test, lr_predictions, average='weighted')
+
+print(f"F1 Score (SVM): {svm_f1_score}")
+print(f"F1 Score (Logistic Regression): {lr_f1_score}")
